@@ -1,0 +1,66 @@
+name: Monorepo CD (Deploy)
+
+on:
+  push:
+    branches: [ main ] # Deploy only when merging into main
+
+jobs:
+  # JOB 1: Detect what changed
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Check for file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+            backend:
+              - 'backend/**'
+
+  # JOB 2: Deploy Frontend
+  deploy-frontend:
+    name: Deploy Frontend
+    needs: changes
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install & Build Frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy to Hosting (e.g., Vercel / Netlify / S3)
+        run: echo "Deploying frontend application..."
+        # Add your specific cloud deployment CLI commands here
+
+  # JOB 3: Deploy Backend
+  deploy-backend:
+    name: Deploy Backend
+    needs: changes
+    if: ${{ needs.changes.outputs.backend == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Server (e.g., Heroku / AWS / DigitalOcean)
+        run: echo "Deploying backend application..."
+        # Add your specific backend deployment CLI commands here
