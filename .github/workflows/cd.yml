@@ -16,13 +16,16 @@ jobs:
 # chose front or back end deployment process, only one of them will be selected , not both front or back 
       backend: ${{ steps.filter.outputs.backend }}
     steps:
-      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
-            frontend: ['frontend/**']
-            backend: ['backend/**']
+            frontend: 
+              - 'frontend/**'
+              - 'scripts/deploy.sh'
+            backend: 
+              - 'backend/**'
+              - 'scripts/deploy.sh'
 
   # 2. DEPLOY FRONTEND
   deploy-frontend:
