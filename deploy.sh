@@ -1,24 +1,42 @@
 #!/bin/bash
-# Path: /home/seid/pro/deploy.sh
-set -e 
 
-echo "--- Deployment Started ---"
+# Usage: ./deploy.sh [frontend|backend]
+SERVICE=$1
 
-# 1. Sync code from repository
+if [ -z "$SERVICE" ]; then
+  echo "Error: No service specified. Usage: ./deploy.sh [frontend|backend]"
+  exit 1
+fi
+
+echo "Starting deployment for: $SERVICE"
+
+# 1. Pull the latest code
 git pull origin main
 
-# 2. Build and restart everything
-# --build: Forces a rebuild of images if code changed
-# -d: Detached mode (runs in background)
-# --remove-orphans: Cleans up containers if you renamed/removed services
-echo "Updating containers..."
-docker-compose up -d --build --remove-orphans
+# 2. Process based on service
+case $SERVICE in
+  frontend)
+    echo "Updating Frontend..."
+    cd frontend
+    docker build -t my-app-frontend .
+    docker stop frontend-container || true
+    docker rm frontend-container || true
+    docker run -d --name frontend-container -p 80:80 my-app-frontend
+    ;;
+  backend)
+    echo "Updating Backend..."
+    cd backend
+    docker build -t my-app-backend .
+    docker stop backend-container || true
+    docker rm backend-container || true
+    docker run -d --name backend-container -p 5000:5000 my-app-backend
+    ;;
+  *)
+    echo "Invalid service: $SERVICE"
+    exit 1
+    ;;
+esac
 
-# 3. Database Maintenance (Optional but recommended)
-# You might want to run migrations here if your framework supports it
-# Example: docker-compose exec -T backend npm run migrate
-
-# 4. Cleanup
+# 3. Cleanup dangling images to save space
 docker image prune -f
-
-echo "--- Deployment Finished Successfully ---"
+echo "Deployment of $SERVICE completed."
