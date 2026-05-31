@@ -2,23 +2,30 @@ name: Monorepo CD Pipeline
 
 on:
   workflow_run:
-    workflows: ["Monorepo CI Pipeline"] # Trigger after CI finishes
+    workflows: ["Monorepo CI Pipeline"]
     types: [completed]
     branches: [main]
 
 jobs:
-  # 1. DETECT CHANGES (To avoid building what hasn't changed)
+  # 1. DETECT CHANGES
   changes:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     outputs:  
-      frontend: ${{ steps.filter.outputs.frontend }}   #the same code change that was detected on the ci will be used to
-# chose front or back end deployment process, only one of them will be selected , not both front or back 
+      frontend: ${{ steps.filter.outputs.frontend }}
       backend: ${{ steps.filter.outputs.backend }}
     steps:
+      # --- ADDED: Checkout is mandatory for paths-filter to work ---
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
       - uses: dorny/paths-filter@v3
         id: filter
         with:
+          base: ${{ github.event.workflow_run.base_branch || 'main' }}
           filters: |
             frontend: 
               - 'frontend/**'
@@ -34,6 +41,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -43,7 +52,7 @@ jobs:
           script: |
             cd /frontend
             git pull origin main
-            ./deploy_frontend.sh # Your specific bash script
+            ./deploy_frontend.sh
 
   # 3. DEPLOY BACKEND
   deploy-backend:
@@ -52,6 +61,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -61,3 +72,4 @@ jobs:
           script: |
             cd ~
             ./deploy.sh
+
