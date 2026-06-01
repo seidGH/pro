@@ -12,8 +12,8 @@ jobs:
     name: Detect Changed Folders
     runs-on: ubuntu-latest
     outputs:
-      frontend: ${{ steps.filter.outputs.frontend }}
-      backend: ${{ steps.filter.outputs.backend }}
+      front: ${{ steps.filter.outputs.front }}
+      back: ${{ steps.filter.outputs.back }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4 #the detection will not stop checkout because copying the whole project file from the github main storage do not take 2-5 seconds ,
@@ -24,20 +24,20 @@ jobs:
         uses: dorny/paths-filter@v3
         with:
           filters: |
-            frontend:
-              - 'frontend/**'
-            backend:
-              - 'backend/**'
+            front:
+              - 'front/**'
+            back:
+              - 'back/**'
 
   # 2. THE FRONTEND JOB (The conditional listener)
   frontend-ci:
     name: Frontend CI
     needs: changes                       # <-- CRITICAL: Wait for the detector job to finish
-    if: ${{ needs.changes.outputs.frontend == 'true' }} # <-- THE CONDITIONAL CHECKING!
+    if: ${{ needs.changes.outputs.front == 'true' }} # <-- THE CONDITIONAL CHECKING!
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend   #Runner lives in the project`s root directory /pro ,
+        working-directory: ./front   #Runner lives in the project`s root directory /pro ,
 # so we have to specify by our ci.yml line here telling the runner to go one step forwared inside the front end folder and work the below tasks and make your default work station here .
     steps:
       - name: Checkout Code
@@ -51,11 +51,11 @@ jobs:
   backend-ci:
     name: Backend CI
     needs: changes                       # <-- CRITICAL: Wait for the detector job to finish
-    if: ${{ needs.changes.outputs.backend == 'true' }}  # <-- THE CONDITIONAL CHECKING!
+    if: ${{ needs.changes.outputs.back == 'true' }}  # <-- THE CONDITIONAL CHECKING!
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: ./back
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
