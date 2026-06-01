@@ -2,7 +2,7 @@ name: Monorepo CD Pipeline
 
 on:
   workflow_run:
-    workflows: ["Monorepo CI Pipeline"]
+    workflows: ["oMonorepo CI Pipeline"]
     types: [completed]
     branches: [main]
 
