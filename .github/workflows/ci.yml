@@ -7,48 +7,37 @@ on:
     branches: [ main ]
 
 jobs:
-  # 1. THE DETECTOR (The question provider)
   changes:
     name: Detect Changed Folders
     runs-on: ubuntu-latest
     outputs:
-      front: ${{ steps.filter.outputs.front }} #variable definition earlier is made as preparation for later use by dorny/paths below
-       back: ${{ steps.filter.outputs.back }} 
-# their value will be either true or false , 
-# determined by the result obtained by dorny/paths-filter@v3 , if it finds no code change inside  /front or /back  
-#as compared with the main branches code, then the value will be false, or 
-#if it detects some changes the value 
-# front= true ,  then  so front end deployment will be executed,
-# back= true  , then the back end deplyment code block below will be executed by the github runner.
+      front: ${{ steps.filter.outputs.front }}
+      back: ${{ steps.filter.outputs.back }}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4 
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # MANDATORY: Fetches all history to allow diffing Downloads all history,
-# including all branches and tags. It fetches the entire repository database. dorny needs it to compare the current push commit with prevouse main branch commits,
-# so dorny uses the fetch-main: 0 data == Vs versus == the base: main to see the git diff , very simple concept.
+          fetch-depth: 0
+
       - name: Check for file changes
         id: filter
-
-        uses: dorny/paths-filter@v3 #A specialized "power tool" designed to detect file changes in a repository.
-#this tool runs its git diff command,
+        uses: dorny/paths-filter@v3
         with:
-        base: ${{ github.event.repository.default_branch }}    # Force comparison against main...the existing reference base code
+          base: ${{ github.event.repository.default_branch }}
           filters: |
             front:
               - 'front/**'
             back:
               - 'back/**'
-  # 2. THE FRONTEND JOB (The conditional listener)
+
   frontend-ci:
     name: Frontend CI
-    needs: changes                       # <-- CRITICAL: Wait for the detector job to finish
-    if: ${{ needs.changes.outputs.front == 'true' }} # <-- THE CONDITIONAL CHECKING!
+    needs: changes
+    if: ${{ needs.changes.outputs.front == 'true' }}
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./front   #Runner lives in the project`s root directory /pro ,
-# so we have to specify by our ci.yml line here telling the runner to go one step forwared inside the front end folder and work the below tasks and make your default work station here .
+        working-directory: ./front
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -57,11 +46,10 @@ jobs:
           npm ci
           npm run test
 
-  # 3. THE BACKEND JOB (The conditional listener)
   backend-ci:
     name: Backend CI
-    needs: changes                       # <-- CRITICAL: Wait for the detector job to finish
-    if: ${{ needs.changes.outputs.back == 'true' }}  # <-- THE CONDITIONAL CHECKING!
+    needs: changes
+    if: ${{ needs.changes.outputs.back == 'true' }}
     runs-on: ubuntu-latest
     defaults:
       run:
