@@ -41,10 +41,18 @@ jobs:
       steps:
         - name: Checkout Code
           uses: actions/checkout@v4   
-        - name: Install & Test
-          run: |
-            npm ci
-            npx vitest run
+      - name: Install & Test
+        run: |
+            echo "Where am I?"
+            pwd
+            echo "What is in the current directory?"
+            ls -F
+            echo "Does the vitest binary exist in node_modules?"
+            ls -l node_modules/.bin/vitest
+            echo "Running tests now..."
+            npm run test
+
+#############################################################################################3
   backend-ci:
     name: Backend CI
     needs: changes
