@@ -23,7 +23,7 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v3
         with:
-          base: ${{ github.event.repository.default_branch }}
+          base: ${{ github.base_ref || github.ref_name }}
           filters: |
             front:
               - 'front/**'
@@ -44,7 +44,7 @@ jobs:
       - name: Install & Test
         run: |
           npm ci
-          npm run test
+          npx vitest run
 
   backend-ci:
     name: Backend CI
