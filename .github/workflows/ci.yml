@@ -41,16 +41,18 @@ jobs:
       steps:
         - name: Checkout Code
           uses: actions/checkout@v4   
-      - name: Install & Test
+        - name: Install & Test (Diagnostic)
           run: |
-            echo "Where am I?"
+            echo "--- 1. Confirming current directory ---"
             pwd
-            echo "What is in the current directory?"
-            ls -F
-            echo "Does the vitest binary exist in node_modules?"
-            ls -l node_modules/.bin/vitest
-            echo "Running tests now..."
-            npm run test
+            echo "--- 2. Checking if node_modules exists in this folder ---"
+            ls -d ./node_modules && echo "Success: node_modules exists" || echo "Error: node_modules does not exist here!"
+            echo "--- 3. Checking if vitest binary exists ---"
+            ls -l ./node_modules/.bin/vitest || echo "Error: vitest binary not found in ./node_modules/.bin/"
+            echo "--- 4. Checking content of node_modules/.bin ---"
+            ls -F ./node_modules/.bin/
+            echo "--- 5. Attempting to run vitest directly ---"
+            ./node_modules/.bin/vitest --version || echo "Error: Failed to execute binary directly"
 #############################################################################################3
   backend-ci:
     name: Backend CI
