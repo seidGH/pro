@@ -1,6 +1,6 @@
 import express from 'express'
 import cors from 'cors'
-import partsRouter from './routes/parts.js'  // partsRouter  is a variable here , just a variable that represents 
+import partsRouter from './routes/parts.js'  // partsRouters  is a variable here , just a variable that represents 
 // parts.js  
 
 
