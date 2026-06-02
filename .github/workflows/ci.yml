@@ -26,42 +26,30 @@ jobs:
           base: ${{ github.base_ref || github.ref_name }}
           filters: |
             front:
-              - 'front/**'
+              - 'pro/front/**'
             back:
-              - 'back/**'
+              - 'pro/back/**'
 
   frontend-ci:
-    name: Frontend CI
-    needs: changes
-    if: ${{ needs.changes.outputs.front == 'true' }}
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-     frontend-ci:
     name: Frontend CI
     needs: changes
     if: ${{ needs.changes.outputs.front == 'true' }}
     runs-on: ubuntu-latest
     defaults:
       run:
-        # Update this path to match your actual repository structure
         working-directory: ./pro/front
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - name: Install & Test
         run: |
           npm ci
           npm run test
 
-#############################################################################################3
   backend-ci:
     name: Backend CI
     needs: changes
@@ -69,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./back
+        working-directory: ./pro/back
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
