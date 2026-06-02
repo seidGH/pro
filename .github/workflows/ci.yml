@@ -36,16 +36,15 @@ jobs:
     if: ${{ needs.changes.outputs.front == 'true' }}
     runs-on: ubuntu-latest
     defaults:
-      run:
-        working-directory: ./front
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: Install & Test
-        run: |
-          npm ci
-          npx vitest run
-
+        run:
+          working-directory: ./front
+      steps:
+        - name: Checkout Code
+          uses: actions/checkout@v4   
+        - name: Install & Test
+          run: |
+            npm ci
+            npx vitest run
   backend-ci:
     name: Backend CI
     needs: changes
