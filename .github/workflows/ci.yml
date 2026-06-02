@@ -44,23 +44,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-     - name: Install & Test (Diagnostic)
+     frontend-ci:
+    name: Frontend CI
+    needs: changes
+    if: ${{ needs.changes.outputs.front == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Update this path to match your actual repository structure
+        working-directory: ./pro/front
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Install & Test
         run: |
-          echo "--- 1. Confirming current directory ---"
-          pwd
-          
-          echo "--- 2. Checking if node_modules exists in this folder ---"
-          ls -d ./node_modules && echo "Success: node_modules exists" || echo "Error: node_modules does not exist here!"
-          
-          echo "--- 3. Checking if vitest binary exists ---"
-          ls -l ./node_modules/.bin/vitest || echo "Error: vitest binary not found in ./node_modules/.bin/"
-          
-          echo "--- 4. Checking content of node_modules/.bin ---"
-          ls -F ./node_modules/.bin/
-          
-          echo "--- 5. Attempting to run vitest directly ---"
-          ./node_modules/.bin/vitest --version || echo "Error: Failed to execute binary directly"
-
+          npm ci
+          npm run test
 
 #############################################################################################3
   backend-ci:
