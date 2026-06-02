@@ -12,24 +12,33 @@ jobs:
     name: Detect Changed Folders
     runs-on: ubuntu-latest
     outputs:
-      front: ${{ steps.filter.outputs.front }}
-      back: ${{ steps.filter.outputs.back }}
+      front: ${{ steps.filter.outputs.front }} #variable definition earlier is made as preparation for later use by dorny/paths below
+       back: ${{ steps.filter.outputs.back }} 
+# their value will be either true or false , 
+# determined by the result obtained by dorny/paths-filter@v3 , if it finds no code change inside  /front or /back  
+#as compared with the main branches code, then the value will be false, or 
+#if it detects some changes the value 
+# front= true ,  then  so front end deployment will be executed,
+# back= true  , then the back end deplyment code block below will be executed by the github runner.
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4 #the detection will not stop checkout because copying the whole project file from the github main storage do not take 2-5 seconds ,
-# it is almost not pain pont for our pipline`s execution  speed.
-        
+        uses: actions/checkout@v4 
+        with:
+          fetch-depth: 0   # MANDATORY: Fetches all history to allow diffing Downloads all history,
+# including all branches and tags. It fetches the entire repository database. dorny needs it to compare the current push commit with prevouse main branch commits,
+# so dorny uses the fetch-main: 0 data == Vs versus == the base: main to see the git diff , very simple concept.
       - name: Check for file changes
         id: filter
 
-base: 'main'        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v3 #A specialized "power tool" designed to detect file changes in a repository.
+#this tool runs its git diff command,
         with:
+        base: ${{ github.event.repository.default_branch }}    # Force comparison against main...the existing reference base code
           filters: |
             front:
               - 'front/**'
             back:
               - 'back/**'
-
   # 2. THE FRONTEND JOB (The conditional listener)
   frontend-ci:
     name: Frontend CI
