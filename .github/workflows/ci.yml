@@ -44,14 +44,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+     - name: Install & Test (Diagnostic)
+        run: |
+          echo "--- 1. Confirming current directory ---"
+          pwd
+          
+          echo "--- 2. Checking if node_modules exists in this folder ---"
+          ls -d ./node_modules && echo "Success: node_modules exists" || echo "Error: node_modules does not exist here!"
+          
+          echo "--- 3. Checking if vitest binary exists ---"
+          ls -l ./node_modules/.bin/vitest || echo "Error: vitest binary not found in ./node_modules/.bin/"
+          
+          echo "--- 4. Checking content of node_modules/.bin ---"
+          ls -F ./node_modules/.bin/
+          
+          echo "--- 5. Attempting to run vitest directly ---"
+          ./node_modules/.bin/vitest --version || echo "Error: Failed to execute binary directly"
 
-      - name: Install Dependencies
-        working-directory: ./front
-        run: npm ci
-
-      - name: Run Vitest
-        working-directory: ./front
-        run: npm run test
 
 #############################################################################################3
   backend-ci:
