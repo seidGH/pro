@@ -14,8 +14,7 @@ jobs:
       front: ${{ steps.filter.outputs.front }}
       back: ${{ steps.filter.outputs.back }}
     steps:
-      - name: Checkout Code                  #runner mostly checkout current repo version , 
-# not the branch that is with latest commit
+      - name: Checkout Code                  
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -24,7 +23,20 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v3
         with:
-          base: ${{ github.base_ref || github.event.before }}     
+          base: 'HEAD~1'
+#This line of code is a conditional fallback mechanism used in GitHub Actions to determine the "starting point" (the base) for your code comparison.
+#In a CI pipeline, you need to know exactly which two points in history to compare so that the system can identify what has changed. Because GitHub Actions are triggered by different events (like a Pull Request versus a direct Push), this line ensures the workflow always finds a valid comparison point.
+#How it works:
+#It uses a logical OR (||) operator, which acts as a "try the first, if empty, use the second" rule.
+#${{ github.base_ref }}:
+#This variable is populated only when a Pull Request is opened. It represents the target branch you are merging into (e.g., main).
+#If you are in a PR, the comparison works perfectly using this.
+#|| (The Fallback):
+#If github.base_ref is empty (which happens when you push directly to main, because there is no Pull Request), the pipeline "falls back" to the second option.
+#${{ github.event.before }}:
+#This is the commit SHA that existed on the branch immediately before your current push.
+#This tells the system to compare "the state of the code before I pushed" to "the state of the code after I pushed," which allows it to correctly identify what you just changed.
+
           filters: |
             front:
               - 'pro/front/**'
