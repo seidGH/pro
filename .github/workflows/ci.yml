@@ -24,7 +24,7 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v3
         with:
-          base: ${{ github.base_ref || 'HEAD^' }}     
+          base: ${{ github.event.before }}     
           filters: |
             front:
               - 'pro/front/**'
