@@ -14,7 +14,8 @@ jobs:
       front: ${{ steps.filter.outputs.front }}
       back: ${{ steps.filter.outputs.back }}
     steps:
-      - name: Checkout Code
+      - name: Checkout Code                  #runner mostly checkout current repo version , 
+# not the branch that is with latest commit
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -23,7 +24,7 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v3
         with:
-          base: ${{ github.base_ref || 'main' }}
+          base: ${{ github.base_ref || 'HEAD^' }}     
           filters: |
             front:
               - 'pro/front/**'
