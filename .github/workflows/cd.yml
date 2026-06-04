@@ -33,7 +33,8 @@ jobs:
             back: 
               - 'back/**'
               - 'scripts/deploy.sh'
-
+            config:
+              - '.github/workflows/cd.yml'
   # 2. DEPLOY FRONTEND
   deploy-frontend:
     needs: changes
