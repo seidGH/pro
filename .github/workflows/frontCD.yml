@@ -1,1 +1,26 @@
+name: FrontendCD
 
+on:
+  workflow_run:
+    workflows: ["Frontend CI"] 
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: SSH into EC2 and run deploy script
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          # This script assumes you have a shell script on your EC2 
+          # at /home/ubuntu/deploy.sh that handles the Docker build/run
+          script: |
+            cd /home/ubuntu/project-directory
+            git pull origin main
+            bash deploy.sh
