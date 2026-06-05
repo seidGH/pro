@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./front
+        working-directory: ./front         #these paths i desicde my self like ./folder or any thing 
+                                           # it is my power to decide on this not on the actions/checkout lol
     steps:
-      - name: where is my checkout happening 
-      - uses: pwd
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4  #the runner desices where to put the checkout codes , usually /home/runner/work/..
+                                   #.@the working space of the github action or runner.
       - name: Install & Build
         run: |
           npm install
