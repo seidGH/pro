@@ -11,6 +11,8 @@ jobs:
       run:
         working-directory: ./front
     steps:
+      - name: where is my checkout happening 
+      - uses: pwd
       - uses: actions/checkout@v4
       - name: Install & Build
         run: |
