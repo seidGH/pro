@@ -23,7 +23,7 @@ jobs:
             cd /home/ubuntu/pro/front
             if [ ! -d ".git" ]; then
               git init
-              git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+              git remote add origin https://github.com/seidGH/pro.git
             fi
             git pull origin main
             chmod +x deploy.sh
