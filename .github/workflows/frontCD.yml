@@ -1,4 +1,4 @@
-kname: FrontendCD
+name: FrontendCD
 
 on:
   workflow_run:
