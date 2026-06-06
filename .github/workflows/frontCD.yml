@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     # This check is crucial for workflow_run
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    steps:
+steps:
       - name: SSH into EC2 and run deploy script
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -19,7 +19,20 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
-          script: |
-            cd /home/ubuntu/project-directory
+
+         script: |
+            # 1. Create the directory if it doesn't exist (using -p to avoid errors)
+            mkdir -p /home/ubuntu/pro/front            
+            # 2. Navigate to the directory
+            cd /home/ubuntu/pro/front
+            # 3. If the directory is not a git repo yet, initialize it
+            # (Only needed the first time, this is safe to run repeatedly)
+            if [ ! -d ".git" ]; then
+              git init
+              git remote add origin <YOUR_REPO_URL>
+            fi
+            # 4. Pull the latest changes
             git pull origin main
-            bash deploy.sh
+            # 5. Set permissions and run
+            chmod +x deploy.sh
+            ./deploy.sh
