@@ -23,7 +23,6 @@ jobs:
             cd /home/ubuntu/pro/front
             if [ ! -d ".git" ]; then
               git init
-              git branch -m master main
               git remote add origin git@github.com:seidGH/pro.git
             fi
             git pull origin main
