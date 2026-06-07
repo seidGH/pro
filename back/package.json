@@ -1,1 +1,6 @@
-{"type":"module","devDependencies":{"prisma":"^5.22.0","tsx":"^4.22.1"},"dependencies":{"@prisma/client":"^5.22.0","cors":"^2.8.6","express":"^5.2.1"}}
+{
+"type":"module",
+"devDependencies":{"prisma":"^5.22.0","tsx":"^4.22.1"},
+"dependencies":{"@prisma/client":"^5.22.0","cors":"^2.8.6","express":"^5.2.1"},
+"scripts": {"start": "node index.js",
+  "test": "echo \"No tests defined\" && exit 0"}}
