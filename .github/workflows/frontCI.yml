@@ -13,7 +13,13 @@ jobs:
                                            # it is my power to decide on this not on the actions/checkout lol
     steps:
       - uses: actions/checkout@v4  #the runner desices where to put the checkout codes , usually /home/runner/work/..
-                                   #.@the working space of the github action or runner.
+
+      - name: Setup Node.js
+      - uses: actions/setup-node@v4
+        with: 
+          node-version: '20' 
+          cache: 'npm'
+          cashe-dependency-path: './front/package-lock.json'                              #.@the working space of the github action or runner.
       - name: Install & Build
         run: |
           npm install
