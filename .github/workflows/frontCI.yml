@@ -18,7 +18,6 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          # Corrected the typo below:
           cache-dependency-path: './front/package-lock.json'
 
       - name: Install & Build
