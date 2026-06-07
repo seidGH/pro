@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./front         #these paths i desicde my self like ./folder or any thing 
+        working-directory: ./front         #These paths i desicde my self like ./folder or any thing 
                                            # it is my power to decide on this not on the actions/checkout lol
     steps:
       - uses: actions/checkout@v4  #the runner desices where to put the checkout codes , usually /home/runner/work/..
