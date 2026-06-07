@@ -1,9 +1,13 @@
 name: Frontend CI
+
 on:
   push:
-    paths: ['front/**']
+    paths:
+      - 'front/**'
   pull_request:
-    paths: ['front/**']
+    paths:
+      - 'front/**'
+
 jobs:
   build:
     runs-on: ubuntu-latest
