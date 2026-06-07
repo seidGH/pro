@@ -19,12 +19,18 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            mkdir -p /home/ubuntu/pro/front
-            cd /home/ubuntu/pro/front
-            if [ ! -d ".git" ]; then
-              git init
-              git remote add origin git@github.com:seidGH/pro.git
-            fi
-            git pull origin main
-            chmod +x deploy.sh
-            ./deploy.sh
+           mkdir -p /home/ubuntu/pro/front
+           cd /home/ubuntu/pro/front
+  
+           if [ ! -d ".git" ]; then
+             git init
+             git remote add origin git@github.com:seidGH/pro.git
+          # You must pull to get the files, but a fresh init needs to allow unrelated histories
+             git fetch origin
+             git reset --hard origin/main
+           else
+             git pull origin main
+           fi
+  
+           chmod +x deploy.sh
+           ./deploy.sh
