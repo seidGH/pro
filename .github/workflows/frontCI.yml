@@ -1,24 +1,23 @@
 name: Frontend CI
 
-
 on:
   push:
-    paths: ['front/**']
+    paths:
+      - 'front/**'
   pull_request:
-    paths: ['front/**']
-
+    paths:
+      - 'front/**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./front         #these paths i desicde my self like ./folder or any thing 
-                                           # it is my power to decide on this not on the actions/checkout lol
+        working-directory: ./front
     steps:
-      - uses: actions/checkout@v4  #the runner desices where to put the checkout codes , usually /home/runner/work/..
-                                   #.@the working space of the github action or runner.
+      - uses: actions/checkout@v4
       - name: Install & Build
         run: |
           npm install
           npm run build
+
