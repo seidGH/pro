@@ -9,17 +9,18 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./front         #these paths i desicde my self like ./folder or any thing 
-                                           # it is my power to decide on this not on the actions/checkout lol
+        working-directory: ./front
     steps:
-      - uses: actions/checkout@v4  #the runner desices where to put the checkout codes , usually /home/runner/work/..
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-      - uses: actions/setup-node@v4
-        with: 
-          node-version: '20' 
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
           cache: 'npm'
-          cashe-dependency-path: './front/package-lock.json'                              #.@the working space of the github action or runner.
+          # Corrected the typo below:
+          cache-dependency-path: './front/package-lock.json'
+
       - name: Install & Build
         run: |
           npm install
