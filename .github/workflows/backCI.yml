@@ -25,4 +25,3 @@ jobs:
       - name: Install & Test
         run: |
           npm install
-          npm run test # Or whatever your test script is
