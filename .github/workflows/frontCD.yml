@@ -18,20 +18,26 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
-          script: |
-            mkdir -p /home/ubuntu/pro/front
-            cd /home/ubuntu/pro/front
-            git config --global url."git@github.com:".insteadOf "https://github.com/"
-            if [ ! -d ".git" ]; then
+            script: |
+              set -e # Exit immediately if a command fails
+  
+  # Ensure target directory exists
+              mkdir -p /home/ubuntu/pro/front
+              cd /home/ubuntu/pro/front
+
+  # Initialize if not already a repo
+              if [ ! -d ".git" ]; then
               git init
               git remote add origin git@github.com:seidGH/pro.git
-              git fetch origin
-              git config --global --get-regexp url
+              fi
+
+  # Use local config instead of global
+              git config core.sshCommand "ssh -o StrictHostKeyChecking=accept-new"
+  
+  # Fetch and force update
+              git fetch origin main
               git reset --hard origin/main
-            else
-              git fetch origin
-              git reset --hard origin/main
-            fi
-            chmod +x deploy.sh
-            ./deploy.sh
-#check
+
+  # Execute orchestrator
+              chmod +x orchestrator.sh
+              ./orchestrator.sh front
