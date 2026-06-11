@@ -2,42 +2,77 @@ name: Frontend CD
 
 on:
   workflow_run:
-    workflows: ["Frontend CI"]
+    workflows: ["Frontend CI"]   # must match CI workflow name exactly
     types:
       - completed
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  build-and-push:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
     steps:
-      - name: SSH into EC2 and run deploy script
+      # 1. Checkout repository,
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3. Login to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # -------------------------
+      # FRONTEND IMAGE
+      # -------------------------
+      - name: Build & Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./front
+          file: ./front/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/pro-frontend:latest
+
+
+  deploy-to-ec2:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4  # <--- THIS IS CRITICAL
+      
+      - name: Copy docker-compose.yml to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "~/pro" # This creates the directory and puts the file inside
+          overwrite: true
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-            script: |
-              set -e # Exit immediately if a command fails
-  
-  # Ensure target directory exists
-              mkdir -p /home/ubuntu/pro/front
-              cd /home/ubuntu/pro/front
+          # No need to decode or chmod manually; this action handles it in memory.
+          script: |
+            export PATH=$PATH:/usr/bin:/usr/local/bin
+            # 1. Create the directory if it doesn't exist
+            mkdir -p ~/pro
+            echo "🔹 Logging into Docker Hub..."
+            echo "${{ secrets.DOCKER_PASSWORD }}" | /usr/bin/docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-  # Initialize if not already a repo
-              if [ ! -d ".git" ]; then
-              git init
-              git remote add origin git@github.com:seidGH/pro.git
-              fi
-
-  # Use local config instead of global
-              git config core.sshCommand "ssh -o StrictHostKeyChecking=accept-new"
-  
-  # Fetch and force update
-              git fetch origin main
-              git reset --hard origin/main
-
-  # Execute orchestrator
-              chmod +x orchestrator.sh
-              ./orchestrator.sh front
+            # 2. IMPORTANT: You must move your docker-compose.yml to the EC2.
+            # If it's already there, we proceed:
+            cd ~/pro
+            echo "🔹 Pulling and Updating..."
+            /usr/bin/docker compose pull
+            /usr/bin/docker compose up -d
