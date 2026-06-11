@@ -64,6 +64,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           # No need to decode or chmod manually; this action handles it in memory.
           script: |
+            set -e 
             export PATH=$PATH:/usr/bin:/usr/local/bin
             # 1. Create the directory if it doesn't exist
             mkdir -p ~/pro
