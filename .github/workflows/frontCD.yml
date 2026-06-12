@@ -30,11 +30,14 @@ jobs:
       # -------------------------
       # FRONTEND IMAGE
       # -------------------------
+      - name: List files to debug paths
+        run: |
+          pwd
+          ls -R
       - name: Build & Push Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./front
-          file: ./front/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/pro-frontend:latest
 
