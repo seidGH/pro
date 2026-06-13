@@ -44,9 +44,8 @@ jobs:
 #,...not easy for tracing error
 
   deploy-to-ec2:
-    needs: build-and-push  #means this deply to ec2 job needs build and push to be already finished above !
+    needs: build-and-push  ##means this deply to ec2 job needs build and push to be already finished above !
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4  # <---because the docker-compose.yml file is inside the git-repository
