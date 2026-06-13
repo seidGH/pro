@@ -48,7 +48,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      steps:
       - name: Checkout code
         uses: actions/checkout@v4  # <---because the docker-compose.yml file is inside the git-repository
 
