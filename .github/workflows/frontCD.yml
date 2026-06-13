@@ -28,7 +28,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       # -------------------------
-      # FRONTEND IMAGE
+      # FRONTEND IMAGE BUILD
       # -------------------------
       - name: List files to debug paths
         run: |
