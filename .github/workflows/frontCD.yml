@@ -32,32 +32,34 @@ jobs:
       # -------------------------
       - name: List files to debug paths
         run: |
-          pwd
-          ls -R
       - name: Build & Push Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./front
+          file: ./front/Dockerfile  
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/pro-frontend:latest
-
+#tags: ${{ secrets.DOCKER_USERNAME }}/spare-frontend:${{ github.sha }}     for image version control and followip live ! 
+# but the :latest  this tag will make every version and image updadets for each commit same 
+#,...not easy for tracing error
 
   deploy-to-ec2:
-    needs: build-and-push
+    needs: build-and-push  #means this deply to ec2 job needs build and push to be already finished above !
     runs-on: ubuntu-latest
 
     steps:
+      steps:
       - name: Checkout code
-        uses: actions/checkout@v4  # <--- THIS IS CRITICAL
-      
+        uses: actions/checkout@v4  # <---because the docker-compose.yml file is inside the git-repository
+
       - name: Copy docker-compose.yml to EC2
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v0.1.7     #this instruction => copy docker-compose to EC2
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "docker-compose.yml"
-          target: "~/pro" # This creates the directory and puts the file inside
+          target: "~/pro" # This creates the directory and puts the file inside...=> pro/docker-compose.yml
           overwrite: true
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
