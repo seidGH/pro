@@ -75,7 +75,17 @@ jobs:
        #echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
        #echo "${{ secrets.DOCKER_PASSWORD }}" | /usr/local/bin/docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
        #echo "${{ secrets.DOCKER_PASSWORD }}" | env docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-            DOCKER_PATH=/usr/bin/docker # Change this to match your EC2's actual path
+       #DOCKER_PATH=/usr/bin/docker # Change this to match your EC2's actual path
+            DOCKER_CMD=$(which docker)
+  # Some systems use 'docker compose' as a plugin, others use 'docker-compose'
+  # Check if the 'docker compose' plugin works, otherwise find the standalone binary
+            if ! $DOCKER_CMD compose version >/dev/null 2>&1; then
+            COMPOSE_CMD=$(which docker-compose)
+            else
+            COMPOSE_CMD="$DOCKER_CMD compose"
+            fi
+
+            echo "🔹 Docker located at: $DOCKER_CMD"
             echo "${{ secrets.DOCKER_PASSWORD }}" | $DOCKER_PATH login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             # 2. IMPORTANT: You must move your docker-compose.yml to the EC2.
             # If it's already there, we proceed:
