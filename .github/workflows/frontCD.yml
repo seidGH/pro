@@ -2,7 +2,7 @@ name: Frontend CD
 
 on:
   workflow_run:
-    workflows: ["Frontend CI"]   # must match CI workflow name exactly
+    workflows: ["Frontend CI"]
     types:
       - completed
 
@@ -10,84 +10,72 @@ jobs:
   build-and-push:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Checkout repository,
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 3. Login to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # -------------------------
-      # FRONTEND IMAGE BUILD
-      # -------------------------
-      - name: List files to debug paths
-        run: |
       - name: Build & Push Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./front
-          file: ./front/Dockerfile  
+          file: ./front/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/pro-frontend:latest
-#tags: ${{ secrets.DOCKER_USERNAME }}/spare-frontend:${{ github.sha }}     for image version control and followip live ! 
-# but the :latest  this tag will make every version and image updadets for each commit same 
-#,...not easy for tracing error
+          # Use both tags for version control and convenience
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/pro-frontend:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/pro-frontend:latest
 
   deploy-to-ec2:
-    needs: build-and-push  ##means this deply to ec2 job needs build and push to be already finished above !
+    needs: build-and-push
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4  # <---because the docker-compose.yml file is inside the git-repository
+        uses: actions/checkout@v4
 
       - name: Copy docker-compose.yml to EC2
-        uses: appleboy/scp-action@v0.1.7     #this instruction => copy docker-compose to EC2
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "docker-compose.yml"
-          target: "~/pro" # This creates the directory and puts the file inside...=> pro/docker-compose.yml
+          target: "~/pro"
           overwrite: true
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          # No need to decode or chmod manually; this action handles it in memory.
           script: |
             set -e
-  
-  # 1. Ensure Docker is installed
+
+            # 1. Ensure Docker is installed
             if ! command -v docker &> /dev/null; then
               echo "🔹 Docker not found. Installing..."
               sudo apt-get update
               sudo apt-get install -y docker.io
               sudo systemctl start docker
               sudo systemctl enable docker
-              sudo usermod -aG docker $USER
-              echo "🔹 Docker installed successfully."
             fi
 
-  # 2. Add current user to docker group (if not already) to allow execution
-  # This avoids needing 'sudo' for docker commands
+            # 2. Add current user to docker group
             sudo usermod -aG docker $USER
 
-  # 3. Docker Login
+            # 3. Docker Login
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-  
-  # 4. Pull and Update
+
+            # 4. Pull and Update
             mkdir -p ~/pro
             cd ~/pro
             echo "🔹 Pulling and Updating..."
