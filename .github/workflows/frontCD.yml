@@ -70,7 +70,7 @@ jobs:
             fi
 
             # 2. Add current user to docker group
-            sudo usermod -aG docker $USER
+            sudo usermod -aG docker $USER  || true
 
             # 3. Docker Login
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
