@@ -10,6 +10,7 @@ jobs:
   build-and-push:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,12 +30,28 @@ jobs:
           context: ./front
           file: ./front/Dockerfile
           push: true
-          # Use both tags for version control and convenience
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/pro-frontend:${{ github.sha }}
             ${{ secrets.DOCKER_USERNAME }}/pro-frontend:latest
-  
+
   deploy-to-ec2:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose.yml to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "~/pro"
+          overwrite: true
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -44,16 +61,13 @@ jobs:
           script: |
             set -e
 
-      # Docker login
-             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # Deploy
-             mkdir -p ~/pro
-             cd ~/pro
+            mkdir -p ~/pro
+            cd ~/pro
 
-             echo "🔹 Pulling latest images..."
-             docker compose pull
+            echo "🔹 Pulling latest images..."
+            docker compose pull
 
-             echo "🔹 Restarting containers..."
-             docker compose up -d
-
+            echo "🔹 Restarting containers..."
+            docker compose up -d
