@@ -86,7 +86,7 @@ jobs:
             fi
 
             echo "🔹 Docker located at: $DOCKER_CMD"
-            echo "${{ secrets.DOCKER_PASSWORD }}" | $DOCKER_PATH login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            echo "${{ secrets.DOCKER_PASSWORD }}" | $DOCKER_CMD login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             # 2. IMPORTANT: You must move your docker-compose.yml to the EC2.
             # If it's already there, we proceed:
             cd ~/pro
