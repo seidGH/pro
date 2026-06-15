@@ -1,4 +1,5 @@
   # Frontend Service
+services:
   frontend:
     build:
       context: ./front
