@@ -1,40 +1,8 @@
-version: "3.9"
-
-services:
-  # database
-  postgres:
-    image: postgres:15
-    container_name: inventory_db
-    restart: always
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: inventory
-    ports:
-      - "5436:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-
-  # Backend Service
-  backend:
-    build:
-      context: ./back
-    container_name: inventory_backend
-    restart: always
-    depends_on:
-      - postgres
-    environment:
-      DATABASE_URL: postgres://admin:password@postgres:5432/inventory
-    networks:
-      - app-network
-
   # Frontend Service
   frontend:
     build:
       context: ./front
-    container_name: pro-frontend:latest
+    container_name: pro-frontend
     restart: always
     ports:
       - "80:80"
