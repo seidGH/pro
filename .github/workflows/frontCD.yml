@@ -31,7 +31,6 @@ jobs:
           file: ./front/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/pro-frontend:${{ github.sha }}
             ${{ secrets.DOCKER_USERNAME }}/pro-frontend:latest
 
   deploy-to-ec2:
