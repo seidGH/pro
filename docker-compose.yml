@@ -1,7 +1,7 @@
   # Frontend Service
 services:
   frontend:
-    container_name: seiddk/pro-frontend:latest
+    image: seiddk/pro-frontend:latest
     restart: always
     ports:
       - "80:80"
