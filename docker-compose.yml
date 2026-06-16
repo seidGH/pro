@@ -1,8 +1,6 @@
   # Frontend Service
 services:
   frontend:
-    build:
-      context: ./front
     container_name: pro-frontend:latest
     restart: always
     ports:
