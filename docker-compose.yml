@@ -3,7 +3,7 @@ services:
   frontend:
     build:
       context: ./front
-    container_name: pro-frontend
+    container_name: pro-frontend:latest
     restart: always
     ports:
       - "80:80"
