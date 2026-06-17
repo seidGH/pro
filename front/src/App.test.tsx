@@ -4,11 +4,6 @@ import '@testing-library/jest-dom';
 import App from './App';
 
 // 1. MOCK THE FETCH: This fakes the API response so the app doesn't try to connect to the backend
-global.fetch = vi.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve([]),
-  })
-) as any;
 
 test('renders the app content', () => {
   render(<App />);
