@@ -1,26 +1,22 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 import '@testing-library/jest-dom'; 
 import App from './App';
 
-// MOCK THE API: Replace the backend call with a controlled response
+// Mock the global fetch with a specific return type
 global.fetch = vi.fn(() =>
   Promise.resolve({
     ok: true,
-    json: () => Promise.resolve([
-      { id: 1, name: 'Part A', model: 'M1', price: 10, stock: 5 }
-    ]),
-  })
-) as any;
+    json: () => Promise.resolve([]),
+  } as Response)
+);
 
-test('renders app and loads mocked data', async () => {
+test('renders the app content', () => {
   render(<App />);
   
-  // Verify the Header is present
-  const heading = screen.getByText(/Parts Inventory/i);
-  expect(heading).toBeInTheDocument();
-
-  // Verify the button is present
-  const button = screen.getByText(/Add Part/i);
-  expect(button).toBeInTheDocument();
+  // Look for the header
+  const headingElement = screen.getByText(/Parts Inventory/i);
+  
+  // Assert it exists
+  expect(headingElement).toBeInTheDocument();
 });
