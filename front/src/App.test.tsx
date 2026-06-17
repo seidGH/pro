@@ -3,19 +3,19 @@ import { expect, test, vi } from 'vitest';
 import '@testing-library/jest-dom'; // Required for .toBeInTheDocument()
 import App from './App';
 
-// Mock the global fetch to prevent connection errors during tests
+// 1. MOCK THE FETCH: This prevents the 'ECONNREFUSED' network error
 global.fetch = vi.fn(() =>
   Promise.resolve({
-    json: () => Promise.resolve([]), // Returns empty data so the app doesn't crash
+    json: () => Promise.resolve([]),
   })
 ) as any;
 
 test('renders the app content', () => {
   render(<App />);
   
-  // Use the text that actually appears in your <h1>
+  // 2. MATCH THE ACTUAL TEXT: Use the text visible in your <h1>
   const element = screen.getByText(/Parts Inventory/i);
   
-  // .toBeInTheDocument() is the standard way to check for visibility
+  // 3. ASSERT: Confirm it exists
   expect(element).toBeInTheDocument();
 });
