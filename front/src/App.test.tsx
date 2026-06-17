@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import App from './App';
 
 // Use a more robust mock structure
-global.fetch = vi.fn().mockImplementation(() =>
+globalThis.fetch = vi.fn().mockImplementation(() =>
   Promise.resolve({
     ok: true,
     json: () => Promise.resolve([]),
