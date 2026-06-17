@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
-import '@testing-library/jest-dom'; // Required for .toBeInTheDocument()
+import '@testing-library/jest-dom'; 
 import App from './App';
 
-// 1. MOCK THE FETCH: This prevents the 'ECONNREFUSED' network error
+// 1. MOCK THE FETCH: This fakes the API response so the app doesn't try to connect to the backend
 global.fetch = vi.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve([]),
@@ -13,9 +13,9 @@ global.fetch = vi.fn(() =>
 test('renders the app content', () => {
   render(<App />);
   
-  // 2. MATCH THE ACTUAL TEXT: Use the text visible in your <h1>
-  const element = screen.getByText(/Parts Inventory/i);
+  // 2. MATCH THE ACTUAL TEXT: Use "Parts Inventory" as shown in your test dump
+  const headingElement = screen.getByText(/Parts Inventory/i);
   
-  // 3. ASSERT: Confirm it exists
-  expect(element).toBeInTheDocument();
+  // 3. ASSERT: Confirm the element is in the document
+  expect(headingElement).toBeInTheDocument();
 });
