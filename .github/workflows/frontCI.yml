@@ -13,14 +13,26 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./front     #this makes the pricess, as front end pipline process ..CI
+        working-directory: ./front     #this makes the process to be front end pipline process ..CI ,
+# from now on only focus on the front end /front folder and ignore the /back even though the whole repo is copied,,,,
+# /back is same and nothing new commit is comming front 
+# the /back files and the update or the new code edit or add comes from the /front folder 
+# so the Runner will process the CI pipline or code integration , testing , build all on /front folder.
     steps:
       - uses: actions/checkout@v4   #eventhough ckeckout will copy the whole repo, it takes almost 5sec,and the main thing is working directory that means Runner will go inside /front folder and will do npm intall there and build this means even though backend floder is checkout together with front end only the npm and testing and build is done on the /front  on eveything inside here ..
                                     #.working directory is by default /front see above code ! and the main point here is that its the files inside /front that makes a real code update and commit that deserves code
-                                    # integration process CI and build 
-      - name: Install & Build
+                                    # integration process CI and build
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Lint Code
+        run: npm run lint
+
+      - name: Run Unit Tests
+        run: npm test
+ 
+      - name: Build
         run: |
-          npm install
           npm run build
 
 
