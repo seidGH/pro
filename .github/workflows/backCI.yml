@@ -1,24 +1,19 @@
 name: CI Pipeline
-
 on: [push]
-
 defaults:
   run:
     working-directory: ./back
-
 jobs:
   test:
     runs-on: ubuntu-latest
-    
     services:
       db:
-        image: postgres:15 # Replace with your specific DB image (e.g., mysql:8)
+        image: postgres:15
         env:
           POSTGRES_DB: inventory
           POSTGRES_USER: admin
-          POSTGRES_PASSWORD: password # Set a dummy password for tests
+          POSTGRES_PASSWORD: password
         ports:
-          # Map container port 5432 to host port 5436
           - 5436:5432
         options: >-
           --health-cmd pg_isready
@@ -26,17 +21,22 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    env:
+      DATABASE_URL: postgresql://admin:password@localhost:5436/inventory
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Environment
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
         run: npm install
 
+      - name: Run migrations
+        run: npx prisma migrate deploy
+
       - name: Run Tests
-        env:
-          DB_HOST: localhost
-          DB_PORT: 5436
-          DB_USER: admin
-          DB_PASS: password # Match the password defined in the service env
-          DB_NAME: inventory
         run: npm test
