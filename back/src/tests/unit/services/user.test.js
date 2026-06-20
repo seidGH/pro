@@ -1,6 +1,6 @@
 import { mockDeep } from 'jest-mock-extended';
 import { PrismaClient } from '@prisma/client';
-import { UserService } from '../../../src/services/userService.js';
+import { UserService } from '../../../../src/services/userService.js';
 
 describe('UserService Unit Tests', () => {
   let mockPrisma;
