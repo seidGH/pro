@@ -13,7 +13,7 @@ app.use('/parts', partsRouter)   //inside partsRouter  there is parts.js name so
  // the compiler jumps to the parts.js file here .....
 
 app.get('/', (req, res) => {
-  res.send('Pro  Project API is running now 🚀')
+  res.send('Pros  Project API is running now 🚀')
 })
 
 app.listen(PORT, () => {
