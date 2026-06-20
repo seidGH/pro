@@ -4,7 +4,7 @@ services:
     image: seiddk/pro-frontend:latest
     restart: always
     ports:
-      - "8888:80"
+      - "3000:80"
     networks:
       - app-network
 
