@@ -1,14 +1,14 @@
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { mockDeep } from 'jest-mock-extended';
 import { PrismaClient } from '@prisma/client';
-import { UserService } from '../../../src/services/userService.js'; 
+import { UserService } from '../../../src/services/userService.js';
 
 describe('UserService Unit Tests', () => {
-  let mockPrisma: DeepMockProxy<PrismaClient>;
-  let userService: UserService;
+  let mockPrisma;
+  let userService;
 
   beforeEach(() => {
     // Fresh mock for every single test
-    mockPrisma = mockDeep<PrismaClient>();
+    mockPrisma = mockDeep();
     userService = new UserService(mockPrisma);
   });
 
