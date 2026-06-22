@@ -13,3 +13,8 @@ model Part {
   price  Float
   stock  Int
 }
+
+model User {
+  id   Int    @id @default(autoincrement())
+  name String
+}
