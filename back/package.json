@@ -4,6 +4,9 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
+ "scripts": {
+    "start": "node index.js",
+    "pretest": "npx prisma migrate deploy",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "test:unit": "node --experimental-vm-modules node_modules/.bin/jest tests/unit",
     "test:integration": "node --experimental-vm-modules node_modules/.bin/jest tests/integration"
@@ -18,5 +21,6 @@
     "@prisma/client": "^5.22.0",
     "cors": "^2.8.6",
     "express": "^5.2.1"
-  }
+  },
+  "author":"SEID"
 }
