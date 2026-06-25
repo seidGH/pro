@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import partsRouter from './routes/parts.js'  //note that partsRouters ,,, is a variable here just a variable that represents 
-// parts.js .  ......
+// parts.js .  ................
 
 
 const app = express()
