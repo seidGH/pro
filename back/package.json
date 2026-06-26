@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
  "scripts": {
-    "build":"npm run build",
+    "build":"exit 0",
     "start": "node index.js",
     "pretest": "npx prisma migrate deploy",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
