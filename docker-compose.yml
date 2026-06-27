@@ -9,7 +9,7 @@
 
   # Backend Service
   backend:
-    image: your-backend-image:latest # Replace with your actual backend image
+    image: seiddk/pro-backend:latest # Replace with your actual backend image
     restart: always
     environment:
       - DB_HOST=db
@@ -26,7 +26,7 @@
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydatabase
+      POSTGRES_DB: inventory
     networks:
       - app-network
     volumes:
